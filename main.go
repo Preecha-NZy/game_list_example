@@ -1,26 +1,37 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
-
-	_ "github.com/lib/pq"
 )
 
-const (
-	DbUsername = "preechac"
-	DbPassword = "0836161840NZy"
-	DbUrl      = "postgres://" + DbUsername + ":" + DbPassword + "@127.0.0.1:5432/gle?sslmode=disable"
-)
+type Test struct {
+	id   int    `db:id`
+	name string `db:name`
+}
 
 func main() {
-	_, err := sql.Open("postgres", DbUrl)
+	db, _ := connect()
+	defer db.Close()
 
-	if err != nil {
-		fmt.Println("databasee connect error", err)
+	test := Test{}
+
+	row, _ := db.Query("select * from test")
+	for row.Next() {
+		err := row.Scan(&test.id, &test.name)
+		if err != nil {
+			fmt.Println("row error", err)
+		}
+
+		fmt.Printf("%v", test)
 	}
+	// b, _ := db.Query("select * from test")
+	// fmt.Println("Hello, World!")
+	// for b.Next() {
+	// 	t := new(Test)
+	// 	b.Scan(t.id, t.name)
+	// 	fmt.Printf("aaaaaaaa %s", t.name)
+	// }
 
-	fmt.Println("Hello, World!")
 	// router := makeRoute()
 	// http.Handle("/", router)
 	// http.ListenAndServe(":8000", router)
