@@ -5,25 +5,26 @@ import (
 )
 
 type Test struct {
-	id   int    `db:id`
-	name string `db:name`
+	id   int
+	name string
 }
 
 func main() {
 	db, _ := connect()
 	defer db.Close()
 
-	test := Test{}
-
+	tests := []Test{}
 	row, _ := db.Query("select * from test")
 	for row.Next() {
-		err := row.Scan(&test.id, &test.name)
+		var a Test
+		err := row.Scan(&a.id, &a.name)
 		if err != nil {
 			fmt.Println("row error", err)
 		}
 
-		fmt.Printf("%v", test)
+		tests = append(tests, a)
 	}
+	fmt.Println(tests)
 	// b, _ := db.Query("select * from test")
 	// fmt.Println("Hello, World!")
 	// for b.Next() {
